@@ -86,6 +86,7 @@ export abstract class CircuitElement {
           this.DrawElement(canvas, obj.draw);
           // Add Circuiy Nodes
           this.DrawNodes(canvas, obj.pins, obj.pointHalf);
+        
           // Add info and data
           this.info = obj.info;
           this.data = obj.data;
@@ -238,6 +239,26 @@ export abstract class CircuitElement {
         fill: item.fill || 'none',
         stroke: item.stroke || 'none'
       });
+  }
+
+  rotate(degrees: number): void { // Added this method
+    const rad = degrees * (Math.PI / 180); // Convert degrees to radians
+    const centerX = this.x + this.tx;
+    const centerY = this.y + this.ty;
+
+    this.elements.transform(`r${degrees},${centerX},${centerY}`);
+    this.updateNodePositions(rad, centerX, centerY);
+  }
+
+  
+  updateNodePositions(rad: number, centerX: number, centerY: number): void { // Added this method
+    for (const node of this.nodes) {
+      const offsetX = node.x - centerX;
+      const offsetY = node.y - centerY;
+      const rotatedX = centerX + (offsetX * Math.cos(rad) - offsetY * Math.sin(rad));
+      const rotatedY = centerY + (offsetX * Math.sin(rad) + offsetY * Math.cos(rad));
+      node.move(rotatedX, rotatedY);
+    }
   }
   /**
    * Draw path relative to the component
