@@ -1,39 +1,61 @@
-# Summary of the CircuitElement Rotation Implementation
+## Summary: Solving LED Connection Issue on Rotated Components
 
-## Problem Approach
+### Problem Statement
+The LED component was not connecting to the intended points on the breadboard after being rotated. This issue arose because the connection logic did not account for the new positions of the nodes after the component was rotated.
 
-The task was to enhance the `CircuitElement` class in a TypeScript-based project to include rotation functionality for circuit elements and their associated nodes. The goal was to allow the circuit elements to be rotated by a specified degree, ensuring that both the graphical representation and the underlying node positions are updated accordingly.
+### Approach and Solution
 
-## Steps Taken to Solve the Problem
+1. **Identify the Root Cause**:
+   - The root cause was that the node positions were not being updated correctly after rotating the component. This resulted in the connection logic still using the original positions of the nodes.
 
-1. **Understanding the Existing Codebase**:
-    - Reviewed the `CircuitElement` class and its methods.
-    - Analyzed how elements and nodes are drawn, moved, and transformed.
+2. **Adding a Property**:
+   - Introduced a new property `pointHalf` to the `CircuitElement` class to store half the size of the circuit node.
+   ```typescript
+   public pointHalf: number;
+3. **Modifying the Constructor**:
+   - Updated the constructor to initialize the pointHalf property using data from a JSON file.
+    ```typescript
+    this.pointHalf = obj.pointHalf;
+    this.DrawNodes(canvas, obj.pins, obj.pointHalf);
 
-2. **Designing the Rotation Feature**:
-    - Decided to implement a `rotate` method in the `CircuitElement` class.
-    - Planned to update node positions using trigonometric calculations based on the rotation angle.
+4. **Implementing Rotation Logic**:
+   - Added a rotate method to handle the rotation of the component and update the positions of its nodes.
+   ```typescript
+    rotate(degrees: number): void {
+    const rad = degrees * (Math.PI / 180);
+    const centerX = this.x + this.tx;
+    const centerY = this.y + this.ty;
 
-3. **Implementing the Rotation Method**:
-    - Added the `rotate` method to apply rotation transformations to the SVG elements.
-    - Calculated the center of rotation based on the current position of the element.
-    - Implemented the `updateNodePositions` method to update node coordinates using the rotation matrix formula.
+    this.elements.transform(`r${degrees},${centerX},${centerY}`);
+    this.updateNodePositions(rad, centerX, centerY);
+    }
 
-4. **Testing and Debugging**:
-    - Ensured the rotation applied correctly to both the visual elements and their nodes.
-    - Verified that the drag-and-drop functionality and other interactions still worked as expected after rotation.
+5. **Updating Node Positions** :
+   - Added an updateNodePositions method to recalculate the node positions based on the rotation angle and center of the component.
+     ```typescript
+     updateNodePositions(rad: number, centerX: number, centerY: number): void {
+     for (const node of this.nodes) {
+     const offsetX = node.x - centerX;
+     const offsetY = node.y - centerY;
+     const rotatedX = centerX + (offsetX * Math.cos(rad) - offsetY * Math.sin(rad));
+     const rotatedY = centerY + (offsetX * Math.sin(rad) + offsetY * Math.cos(rad));
+     node.move(rotatedX, rotatedY);
+     }
+     }
 
-## New Packages/Technologies Used
+ **Outcome**
+By implementing the above changes, the LED component can now correctly connect to the intended points on the breadboard even after being rotated. The solution ensures that both the visual representation and logical connection points of the component are updated appropriately.
 
-No new packages or technologies were introduced in this implementation. The existing framework and libraries used in the project were sufficient to implement the required functionality.
 
-## Files Heavily Changed
+**Commit Message**
+feat: Add rotation functionality to CircuitElement
+- Added `pointHalf` property to store half the size of the circuit node.
+- Modified constructor to initialize `pointHalf` property.
+- Added `rotate` method to rotate the circuit element by a specified degree.
+- Added `updateNodePositions` method to update node positions after rotation.
 
-1. **`CircuitElement.ts`**:
-    - Added `rotate` and `updateNodePositions` methods.
-    - Made minor adjustments to existing methods to ensure compatibility with the new rotation functionality.
 
-## URL to `SUMMARY.md`
 
-This document is intended to be stored in the root directory of the project for easy reference. The URL to access this summary within the project repository would be:
+
+
 
