@@ -55,6 +55,8 @@ feat: Add rotation functionality to CircuitElement
 - Added `updateNodePositions` method to update node positions after rotation.
 
 
+![eSim Demo](demo/rotated-led-connection.png) LED Component Connected Correctly After Rotation" clearly states what the screenshot demonstrates, which is the successful connection of the LED component after implementing the rotation logic.
+
 
 
 
