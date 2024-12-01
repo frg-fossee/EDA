@@ -26,9 +26,11 @@ export class CodeEditorComponent {
   /**
    * Monaco code editor options
    */
+   size = 15;
   editorOptions = {
     theme: 'vs',
-    language: 'c'
+    language: 'c',
+    fontSize: 15
   };
   /**
    * Instance of Monaco editor
@@ -144,6 +146,17 @@ export class CodeEditorComponent {
       }
     }
   }
+  /**
+ * add a dropdown list for choosing font size
+ */
+  fontSizes = [10, 12, 14, 16, 18, 20, 24, 26, 28]; // Font size options for the dropdown
+  editorFontSize = 16; // Default font size
+
+  // Update font size in editor options
+  updateFontSize(): void {
+    this.editorOptions = { ...this.editorOptions, fontSize: this.editorFontSize };
+  }
+
   /**
    * Download the code from code editor
    */
@@ -1229,5 +1242,7 @@ export class CodeEditorComponent {
       folder.style.display = 'none';
     }
   }
+
+
 
 }

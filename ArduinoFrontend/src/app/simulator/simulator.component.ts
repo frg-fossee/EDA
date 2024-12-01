@@ -24,7 +24,14 @@ import { sample } from 'rxjs/operators';
  * Declare Raphael so that build don't throws error
  */
 declare var Raphael;
-
+/**
+ * Disable drag while Simulation
+ */
+export let isDragEnable = { value: true };
+/**
+ * Stoping Unnecessary drag ;
+ */
+export let stopdrag = { value: false };
 /**
  * Class For Simulator Page (Component)
  */
@@ -79,6 +86,10 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    * Simulation button toggle for disabling
    */
   disabled = false;
+  /**
+   * Simulation button toggle for disabling adding_new_component option
+   */
+  isAddComponentEnabled = true;
   /**
    * Stores the toggle status for expanding Virtual console
    */
@@ -348,7 +359,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   /**
    * Get the simulation result selected
    */
-   onSelectionChanges(event) {
+  onSelectionChanges(event) {
     this.getSimRecSelectChange(event.value);
   }
 
@@ -371,10 +382,23 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   /** Function called when Start Simulation button is triggered */
   StartSimulation() {
     this.disabled = true;
-    if (!this.graphToggle) {
-      this.graphToggle = !this.graphToggle;
+     // Check if code is written before starting the simulation
+    const isCodeWritten = this.checkCodeWritten(); // Custom function to check code availability
+    if (!isCodeWritten) {
+      // Show a popup alert that no code is written
+      this.showPopup("No code written. Please write some code before simulating.")
+      //window.alert('No code has been written for one or more devices. Please write code before starting the simulation.');
+      this.disabled = false; // Re-enable the Start button
+      return;
     }
+    // if (!this.graphToggle) {
+    //   this.graphToggle = !this.graphToggle;
+    // }
     // Clears Output in Console
+    this.hide_buttons();
+    this.isAddComponentEnabled = false;
+    isDragEnable.value = false;
+
     Workspace.ClearConsole();
     // prints the output in console
     window['printConsole']('Starting Simulation', ConsoleType.INFO);
@@ -397,11 +421,50 @@ export class SimulatorComponent implements OnInit, OnDestroy {
       // Hide loading animation
       sim.style.display = 'none';
       Workspace.stopSimulation(() => {
+        this.visible_buttons();
+        this.isAddComponentEnabled = true;
+        isDragEnable.value = true;
         this.disabled = false;
         document.getElementById('simload').style.display = 'none';
       });
     }
   }
+  //function to check if ino code was
+  checkCodeWritten(): boolean {
+    for (const arduino of window.scope.ArduinoUno) {
+      if (arduino.code === ''){
+        return false; // If no code written, return false
+      }
+    }
+    return true; // Ifcode written, return true
+  }
+  
+  /** Display a popup message
+ * @param message Message to display
+ */
+showPopup(message) {
+  const popup = document.createElement('div');
+  popup.innerText = message;
+  popup.style.position = 'fixed';
+  popup.style.top = '50%';
+  popup.style.left = '50%';
+  popup.style.transform = 'translate(-50%, -50%)';
+  popup.style.padding = '20px';
+  popup.style.backgroundColor = '#f8d7da';
+  popup.style.color = '#721c24';
+  popup.style.border = '1px solid #f5c6cb';
+  popup.style.borderRadius = '5px';
+  popup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+  popup.style.zIndex = '1000';
+
+
+  document.body.appendChild(popup);
+
+
+  setTimeout(() => {
+      document.body.removeChild(popup);
+    }, 3000);
+``}
   /** Function called to hide simulation loading svg */
   hidesimload() {
     const simload = document.getElementById('simload');
@@ -487,7 +550,9 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    * @param key string
    */
   componentdbClick(key: string) {
-    Workspace.addComponent(key, 100, 100, 0, 0);
+    if (this.isAddComponentEnabled) {
+      Workspace.addComponent(key, 100, 100, 0, 0);
+    }
   }
   /**
    * Event is fired when the user starts dragging an component or text selection.
@@ -496,8 +561,12 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    */
   dragStart(event: DragEvent, key: string) {
     // Save Dump of current Workspace
-    event.dataTransfer.dropEffect = 'copyMove';
-    event.dataTransfer.setData('text', key);
+    if (!this.isAddComponentEnabled) {
+      event.preventDefault();
+    } else {
+      event.dataTransfer.dropEffect = 'copyMove';
+      event.dataTransfer.setData('text', key);
+    }
   }
   /**
    * Function calls zoomIn/Out() mentioned in Workspace.ts
@@ -536,11 +605,26 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     });
     viewref.afterClosed();
   }
+  /** Hide buttons while Simulation is running */
+  hide_buttons() {
+    const buttonss = document.querySelectorAll('.hidebtn') as NodeListOf<HTMLButtonElement>;
+    buttonss.forEach((button) => {
+      button.disabled = true;
+    });
+  }
+  /** make butoons visible */
+  visible_buttons() {
+    const buttonss = document.querySelectorAll('.hidebtn') as NodeListOf<HTMLButtonElement>;
+    buttonss.forEach((button) => {
+      button.disabled = false;
+    });
+  }
   /** Function deletes the component */
   delete() {
     Workspace.DeleteComponent();
     Workspace.hideContextMenu();
   }
+
   /** Function pastes the component */
   paste() {
     Workspace.pasteComponent();
@@ -904,13 +988,17 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    * Undo Operation
    */
   undoChange() {
+    stopdrag.value = true;
     UndoUtils.workspaceUndo();
+    stopdrag.value = false;
   }
   /**
    * Redo Operation
    */
   redoChange() {
+    stopdrag.value = true;
     UndoUtils.workspaceRedo();
+    stopdrag.value = false;
   }
   /**
    * Create a new branch for project
@@ -1036,7 +1124,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
       for (const val of v) {
         const data = JSON.parse(val.result.replaceAll('\'', '\"'));
         const key = (Object.keys(data));
-        temp.push({id: val.id, length: data[key[0]]['length']});
+        temp.push({ id: val.id, length: data[key[0]]['length'] });
       }
       this.simData = temp;
     });
