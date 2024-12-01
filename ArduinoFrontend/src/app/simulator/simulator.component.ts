@@ -382,6 +382,15 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   /** Function called when Start Simulation button is triggered */
   StartSimulation() {
     this.disabled = true;
+     // Check if code is written before starting the simulation
+    const isCodeWritten = this.checkCodeWritten(); // Custom function to check code availability
+    if (!isCodeWritten) {
+      // Show a popup alert that no code is written
+      this.showPopup("No code written. Please write some code before simulating.")
+      //window.alert('No code has been written for one or more devices. Please write code before starting the simulation.');
+      this.disabled = false; // Re-enable the Start button
+      return;
+    }
     // if (!this.graphToggle) {
     //   this.graphToggle = !this.graphToggle;
     // }
@@ -420,6 +429,42 @@ export class SimulatorComponent implements OnInit, OnDestroy {
       });
     }
   }
+  //function to check if ino code was
+  checkCodeWritten(): boolean {
+    for (const arduino of window.scope.ArduinoUno) {
+      if (arduino.code === ''){
+        return false; // If no code written, return false
+      }
+    }
+    return true; // Ifcode written, return true
+  }
+  
+  /** Display a popup message
+ * @param message Message to display
+ */
+showPopup(message) {
+  const popup = document.createElement('div');
+  popup.innerText = message;
+  popup.style.position = 'fixed';
+  popup.style.top = '50%';
+  popup.style.left = '50%';
+  popup.style.transform = 'translate(-50%, -50%)';
+  popup.style.padding = '20px';
+  popup.style.backgroundColor = '#f8d7da';
+  popup.style.color = '#721c24';
+  popup.style.border = '1px solid #f5c6cb';
+  popup.style.borderRadius = '5px';
+  popup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+  popup.style.zIndex = '1000';
+
+
+  document.body.appendChild(popup);
+
+
+  setTimeout(() => {
+      document.body.removeChild(popup);
+    }, 3000);
+``}
   /** Function called to hide simulation loading svg */
   hidesimload() {
     const simload = document.getElementById('simload');

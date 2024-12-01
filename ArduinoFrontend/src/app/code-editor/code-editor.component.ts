@@ -147,6 +147,24 @@ export class CodeEditorComponent {
     }
   }
   /**
+ * add a dropdown list for choosing font size
+ */
+  fontSizes = [10, 12, 14, 16, 18, 20, 24, 26, 28]; // Font size options for the dropdown
+  editorFontSize = 16; // Default font size
+
+
+  editorInstance: any;
+  // Update font size in editor options
+  updateFontSize(): void {
+    this.editorOptions = { ...this.editorOptions, fontSize: this.editorFontSize };
+
+      // If the editor instance exists, update its options directly
+    if (this.editorInstance) {
+      this.editorInstance.updateOptions({ fontSize: this.editorFontSize });
+    }
+  }
+
+  /**
    * Download the code from code editor
    */
   DownloadCode() {
@@ -1231,5 +1249,7 @@ export class CodeEditorComponent {
       folder.style.display = 'none';
     }
   }
+
+
 
 }
