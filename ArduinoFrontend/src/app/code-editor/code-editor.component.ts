@@ -152,8 +152,6 @@ export class CodeEditorComponent {
   fontSizes = [10, 12, 14, 16, 18, 20, 24, 26, 28]; // Font size options for the dropdown
   editorFontSize = 16; // Default font size
 
-
-  editorInstance: any;
   // Update font size in editor options
   updateFontSize(): void {
     this.editorOptions = { ...this.editorOptions, fontSize: this.editorFontSize };
