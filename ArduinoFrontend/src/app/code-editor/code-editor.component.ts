@@ -157,11 +157,6 @@ export class CodeEditorComponent {
   // Update font size in editor options
   updateFontSize(): void {
     this.editorOptions = { ...this.editorOptions, fontSize: this.editorFontSize };
-
-      // If the editor instance exists, update its options directly
-    if (this.editorInstance) {
-      this.editorInstance.updateOptions({ fontSize: this.editorFontSize });
-    }
   }
 
   /**
