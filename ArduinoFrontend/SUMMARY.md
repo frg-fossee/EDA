@@ -22,7 +22,7 @@ The goal was to implement a font size dropdown in the code editor for dynamic fo
    - Introduced a `fontSizes` array to store font size options.
    - Initialized a default font size (`editorFontSize = 16`).
    - Defined the `updateFontSize()` method to reflect font size changes dynamically in the editor options.
-
+![Demo]([https://imgur.com/your-demo.gif](https://drive.google.com/file/d/1YwH-IE64UW_Y4WpW-gtMB1wpYHiatBup))
 
 # Task 3.27: No Code Written Popup
 
@@ -52,4 +52,4 @@ This task involves implementing a feature that checks if any `.ino` code is writ
      - Called `checkCodeWritten()` to validate code presence.
      - If no code is written, displayed a popup message via `popupMessage()` and re-enabled the "Start Simulation" button.
 
-
+![demo](https://drive.google.com/file/d/1ax_MTzmwRCHX7A6fsovaudVBEESZm3F_/view?usp=drivesdk)
