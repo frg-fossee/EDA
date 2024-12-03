@@ -10,7 +10,7 @@
       style="display: flex; background-color:whitesmoke; justify-content: space-between;margin:auto;">
       <span style="flex:1 1 auto;"></span>
       
-      <div class="form-group mt-2" matTooltip="Choose font size" style="max-height: 20px; box-shadow: whitesmoke;">
+      <div class="form-group mt-2" matTooltip="Choose font size" style="max-height: 30px; box-shadow: whitesmoke;">
         <select id="fontSizeSelector" class="form-control form-control-sm" [(ngModel)]="editorFontSize" (change)="updateFontSize()" >
           <option *ngFor="let size of fontSizes" [value]="size">{{ size }} px</option>
         </select>
