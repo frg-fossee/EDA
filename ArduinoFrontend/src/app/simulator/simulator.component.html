@@ -134,7 +134,8 @@
     (click)="StartSimulation()" [style.background-color]="stoggle ? 'transparent' : 'lightgreen'">
     <i style="font-size: 20px;color: black;" [ngClass]="stoggle ? 'fas fa-play-circle' : 'fas fa-pause-circle'"></i>
   </button>
-
+  <app-popup #popup></app-popup>
+  
   <!--simulation loading svg-->
   <div id="simload" style="display:none;height:20%;padding: 10px;">
     <img src="./assets/images/Spin.svg" width="30" height="30">

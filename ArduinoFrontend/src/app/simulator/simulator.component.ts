@@ -1,4 +1,4 @@
-import { Component, OnInit, Injector, ViewEncapsulation, OnDestroy, EventEmitter } from '@angular/core';
+import { Component, OnInit, Injector, ViewEncapsulation, OnDestroy, EventEmitter,ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Workspace, ConsoleType } from '../Libs/Workspace';
 import { Utils } from '../Libs/Utils';
@@ -20,6 +20,7 @@ import { UndoUtils } from '../Libs/UndoUtils';
 import { ExitConfirmDialogComponent } from '../exit-confirm-dialog/exit-confirm-dialog.component';
 import { SaveProjectDialogComponent } from './save-project-dialog/save-project-dialog.component';
 import { sample } from 'rxjs/operators';
+import { PopupComponent } from '../popup/popup.component';
 /**
  * Declare Raphael so that build don't throws error
  */
@@ -162,7 +163,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    * Determines whether staff is
    */
   isStaff = false;
-  /**
+    /**
    * Simulator Component constructor
    * @param aroute Activated Route
    * @param dialog Material Dialog
@@ -379,6 +380,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     });
   }
 
+  @ViewChild('popup') popup!: PopupComponent;
   /** Function called when Start Simulation button is triggered */
   StartSimulation() {
     this.disabled = true;
@@ -386,7 +388,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     const isCodeWritten = this.checkCodeWritten(); // Custom function to check code availability
     if (!isCodeWritten) {
       // Show a popup alert that no code is written
-      this.showPopup("No code written. Please write some code before simulating.")
+      this.popupMessage("No code written. Please write some code before simulating.")
       //window.alert('No code has been written for one or more devices. Please write code before starting the simulation.');
       this.disabled = false; // Re-enable the Start button
       return;
@@ -438,33 +440,14 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     }
     return true; // Ifcode written, return true
   }
-  
-  /** Display a popup message
- * @param message Message to display
- */
-showPopup(message) {
-  const popup = document.createElement('div');
-  popup.innerText = message;
-  popup.style.position = 'fixed';
-  popup.style.top = '50%';
-  popup.style.left = '50%';
-  popup.style.transform = 'translate(-50%, -50%)';
-  popup.style.padding = '20px';
-  popup.style.backgroundColor = '#f8d7da';
-  popup.style.color = '#721c24';
-  popup.style.border = '1px solid #f5c6cb';
-  popup.style.borderRadius = '5px';
-  popup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-  popup.style.zIndex = '1000';
+   
+  // Display popup message
+  popupMessage(message: string): void {
+    if (this.popup) {
+      this.popup.show(message);  // Show the popup
+    } 
+  }
 
-
-  document.body.appendChild(popup);
-
-
-  setTimeout(() => {
-      document.body.removeChild(popup);
-    }, 3000);
-``}
   /** Function called to hide simulation loading svg */
   hidesimload() {
     const simload = document.getElementById('simload');
