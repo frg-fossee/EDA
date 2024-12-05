@@ -41,6 +41,7 @@ import { ViewCodeComponent } from './lti-form/view-code/view-code.component';
 import { GraphComponent } from './graph/graph.component';
 import { GraphDataService } from './graph-data.service';
 import { GraphlistComponent } from './graphlist/graphlist.component';
+import { PopupComponent } from './popup/popup.component';
 
 /**
  * Monaco OnLoad Function
@@ -83,6 +84,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
     ViewCodeComponent,
     GraphComponent,
     GraphlistComponent,
+    PopupComponent,
   ],
   imports: [
     BrowserModule,
@@ -115,6 +117,8 @@ const monacoConfig: NgxMonacoEditorConfig = {
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ],
-  exports: [AppComponent]
+  exports: [AppComponent,
+    PopupComponent
+  ]
 })
 export class AppModule { }

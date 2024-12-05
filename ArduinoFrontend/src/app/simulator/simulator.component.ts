@@ -1,4 +1,4 @@
-import { Component, OnInit, Injector, ViewEncapsulation, OnDestroy, EventEmitter } from '@angular/core';
+import { Component, OnInit, Injector, ViewEncapsulation, OnDestroy, EventEmitter,ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Workspace, ConsoleType } from '../Libs/Workspace';
 import { Utils } from '../Libs/Utils';
@@ -20,6 +20,7 @@ import { UndoUtils } from '../Libs/UndoUtils';
 import { ExitConfirmDialogComponent } from '../exit-confirm-dialog/exit-confirm-dialog.component';
 import { SaveProjectDialogComponent } from './save-project-dialog/save-project-dialog.component';
 import { sample } from 'rxjs/operators';
+import { PopupComponent } from '../popup/popup.component';
 /**
  * Declare Raphael so that build don't throws error
  */
@@ -162,7 +163,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    * Determines whether staff is
    */
   isStaff = false;
-  /**
+    /**
    * Simulator Component constructor
    * @param aroute Activated Route
    * @param dialog Material Dialog
@@ -379,9 +380,19 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     });
   }
 
+  @ViewChild('popup') popup!: PopupComponent;
   /** Function called when Start Simulation button is triggered */
   StartSimulation() {
     this.disabled = true;
+     // Check if code is written before starting the simulation
+    const isCodeWritten = this.checkCodeWritten(); // Custom function to check code availability
+    if (!isCodeWritten) {
+      // Show a popup alert that no code is written
+      this.popupMessage("No code written. Please write some code before simulating.")
+      //window.alert('No code has been written for one or more devices. Please write code before starting the simulation.');
+      this.disabled = false; // Re-enable the Start button
+      return;
+    }
     // if (!this.graphToggle) {
     //   this.graphToggle = !this.graphToggle;
     // }
@@ -420,6 +431,23 @@ export class SimulatorComponent implements OnInit, OnDestroy {
       });
     }
   }
+  //function to check if ino code was
+  checkCodeWritten(): boolean {
+    for (const arduino of window.scope.ArduinoUno) {
+      if (arduino.code === ''){
+        return false; // If no code written, return false
+      }
+    }
+    return true; // Ifcode written, return true
+  }
+   
+  // Display popup message
+  popupMessage(message: string): void {
+    if (this.popup) {
+      this.popup.show(message);  // Show the popup
+    } 
+  }
+
   /** Function called to hide simulation loading svg */
   hidesimload() {
     const simload = document.getElementById('simload');

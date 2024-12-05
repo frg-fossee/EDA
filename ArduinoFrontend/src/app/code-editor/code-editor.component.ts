@@ -147,19 +147,16 @@ export class CodeEditorComponent {
     }
   }
   /**
-   * Increase the size of the font in the editor
-   */
-  IncreaseFont(fontSize: number) {
-    this.size = this.size + 1;
-    this.editorOptions = {...this.editorOptions, fontSize: this.size};
+ * add a dropdown list for choosing font size
+ */
+  fontSizes = [10, 12, 14, 16, 18, 20, 24, 26, 28]; // Font size options for the dropdown
+  editorFontSize = 16; // Default font size
+
+  // Update font size in editor options
+  updateFontSize(): void {
+    this.editorOptions = { ...this.editorOptions, fontSize: this.editorFontSize };
   }
-  /**
-   * Decrease the size of the font in the editor
-   */
-  DecreaseFont(fontSize: number) {
-    this.size = this.size - 1;
-    this.editorOptions = {...this.editorOptions, fontSize: this.size};
-  }
+
   /**
    * Download the code from code editor
    */
@@ -1245,5 +1242,7 @@ export class CodeEditorComponent {
       folder.style.display = 'none';
     }
   }
+
+
 
 }
