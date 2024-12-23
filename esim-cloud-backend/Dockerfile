@@ -33,6 +33,7 @@ RUN curl -fSL https://github.com/imr/ngspice/archive/ngspice-$NGSPICE_VERSION.ta
 
 # Arduino Cli and Compiling tools
 RUN apk add \
+	cairo-dev cairo cairo-tools \
         wget \
         tar \
         ca-certificates \
