@@ -39,7 +39,10 @@ RUN apk add \
         gcc-avr \
         binutils \
         avr-libc \
-        ctags
+        ctags \
+        cairo-dev \
+        cairo \
+        cairo-tools
 
 ENV USER=root
 
