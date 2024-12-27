@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ArduinoUno } from '../Libs/outputs/Arduino';
 import { Download } from '../Libs/Download';
 
@@ -16,7 +16,7 @@ declare var window;
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.css']
 })
-export class CodeEditorComponent {
+export class CodeEditorComponent implements OnChanges {
   // TODO: Fetch records and Suggestion from api
 
   /**
@@ -110,6 +110,10 @@ export class CodeEditorComponent {
    */
   @Input() height = 80;
   /**
+   * Editor's dynamic height
+   */
+  editorHeight = 0;
+  /**
    * Code Visibility in LTI mode
    */
   @Input() codeView = true;
@@ -182,6 +186,24 @@ export class CodeEditorComponent {
       forceMoveMarkers: false
     }]);
     this.openFolder();
+  }
+  /**
+   * Monitor input changes for dynamic resizing
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['width']) {
+      this.updateEditorHeight();
+    }
+  }
+  /**
+   * Calculate editor height dynamically
+   */
+  private updateEditorHeight(): void {
+    const containerPadding = 135; // Account for toolbar and padding
+    this.editorHeight = (window.innerHeight * this.height) / 100 - containerPadding;
+    if (this.editor) {
+      this.editor.layout();
+    }
   }
   /**
    * On Monaco code editor initialization

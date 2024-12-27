@@ -249,11 +249,18 @@
 </div>
 <!-- end of icon block -->
 
-
+<!-- 
 <div class="code-editor" style="z-index: 1000;" #codeDiv>
   <app-code-editor width="500" height="100" [reinit]="openCodeEditor"></app-code-editor>
 </div>
-
+-->
+<div class="code-editor" style="z-index: 1000;" #codeDiv>
+  <app-code-editor [width]="editorWidth" height="100" [reinit]="openCodeEditor"></app-code-editor>
+  <div
+    class="resize-handle"
+    (mousedown)="startResize($event)">
+  </div>
+ </div>
 
 
 <div class="d-flex" id="wrapper">

@@ -166,14 +166,22 @@
   position: fixed;
   top: 100px;
   left: -600px;
-  width: 500px;
   transition: left 0.5s ease-in-out;
 }
 
 .show-code-editor {
   left: 0;
 }
-
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize; /* Horizontal resize cursor */
+  background-color: #ccc;
+ }
+ 
 .lightblue {
   background-color: lightskyblue;
 }

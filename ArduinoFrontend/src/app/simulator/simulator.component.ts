@@ -162,6 +162,11 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    * Determines whether staff is
    */
   isStaff = false;
+  // New properties for resizing the code editor
+  editorWidth = 500; // Set an initial width for the editor
+  isResizing = false;
+  initialWidth = 500;
+  initialMouseX = 0;
   /**
    * Simulator Component constructor
    * @param aroute Activated Route
@@ -189,6 +194,44 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     // Set Default Scale and Translation
     el.setAttribute('transform', 'scale(1,1)translate(0,0)');
     return el;
+  }
+   // Start resizing: Capture initial position
+  startResize(event: MouseEvent) {
+    this.isResizing = true;
+    this.initialWidth = this.editorWidth;
+    this.initialMouseX = event.clientX;
+    // Attach mousemove and mouseup event listeners to document
+    document.addEventListener('mousemove', this.onMouseMove.bind(this));
+    document.addEventListener('mouseup', this.stopResize.bind(this));
+  }
+  // Resize logic: Update editor width as the mouse moves
+  onMouseMove(event: MouseEvent) {
+    if (this.isResizing && !this.toggle) {
+      const diff = event.clientX - this.initialMouseX;
+      let newEditorWidth = this.initialWidth + diff;
+      // Minimum width
+      const minWidth = 150;
+      if (newEditorWidth < minWidth) {
+        newEditorWidth = minWidth;
+      }
+      // Maximum width
+      const maxWidth = window.innerWidth - 450;
+      if (newEditorWidth > maxWidth) {
+        newEditorWidth = maxWidth;
+      }
+      this.editorWidth = newEditorWidth;
+      // Update the handle position
+      const handle = document.querySelector('.resize-handle');
+      if (handle instanceof HTMLElement) {
+        handle.style.left = `${this.editorWidth}px`;
+      }
+    }
+  }
+  // Stop resizing: Remove mousemove and mouseup event listeners
+  stopResize() {
+    this.isResizing = false;
+    document.removeEventListener('mousemove', this.onMouseMove.bind(this));
+    document.removeEventListener('mouseup', this.stopResize.bind(this));
   }
   /**
    * On Destroy Callback
@@ -431,6 +474,15 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    */
   toggleCodeEditor(elem: HTMLElement) {
     elem.classList.toggle('show-code-editor');
+    const currentWidth = elem.offsetWidth; // Get the current width of the editor
+    if (this.toggle) {
+      // Show the editor
+      elem.style.left = `0px`;
+    } else {
+      // Hide the editor based on its current width
+      elem.style.left = `-${currentWidth}px`;
+    }
+
     this.toggle = !this.toggle;
     this.openCodeEditor = !this.openCodeEditor;
   }
