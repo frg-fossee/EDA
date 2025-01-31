@@ -606,6 +606,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
         // Update Project to DB
         SaveOnline.Save(this.projectTitle, this.description, this.api, branch, newVersionId, (out) => {
           AlertService.showAlert('Updated');
+          Workspace.hasUnsavedChanges = false; // Set flag to false once saved
           if (out['duplicate']) {
             // TODO: if duplicate, refresh the route with same versionId and same branch
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -674,6 +675,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
           }
         );
       });
+      Workspace.hasUnsavedChanges = false;
     }
   }
   /** Function saves or updates the project offline */
@@ -686,6 +688,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     // Save circuit if id is not presenr
     if (this.projectId) {
       Workspace.SaveCircuit(this.projectTitle, this.description, callback, this.projectId);
+      Workspace.hasUnsavedChanges = false;
     } else {
       // save circuit and add query parameters
       Workspace.SaveCircuit(this.projectTitle, this.description, (v) => {
@@ -706,6 +709,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
         }
       });
     }
+    Workspace.hasUnsavedChanges = false; // Set flag to false once saved
   }
 
   /**
@@ -816,35 +820,39 @@ export class SimulatorComponent implements OnInit, OnDestroy {
    * Handles routeLinks
    */
   HandleRouter(callback) {
-    AlertService.showOptions(
-      'Save changes to the untitled circuit? Your changes will be lost if you do not save it.',
-      () => {
-        AlertService.showCustom(
-          SaveProjectDialogComponent,
-          {
-            onChangeProjectTitle: (e) => {
-              this.projectTitle = e.target.value || '';
-              return this.projectTitle;
+    if (!Workspace.hasUnsavedChanges || Workspace.checkIfWorkspaceEmpty()) {
+      callback();
+      } else {
+      AlertService.showOptions(
+        'Save changes to the untitled circuit? Your changes will be lost if you do not save it.',
+        () => {
+          AlertService.showCustom(
+            SaveProjectDialogComponent,
+            {
+              onChangeProjectTitle: (e) => {
+                this.projectTitle = e.target.value || '';
+                return this.projectTitle;
+              },
+              projectTitle: this.projectTitle,
             },
-            projectTitle: this.projectTitle,
-          },
-          (value) => {
-            if (value) {
-              this.SaveProjectOff(() => {
-                callback();
-              });
+            (value) => {
+              if (value) {
+                this.SaveProjectOff(() => {
+                  callback();
+                });
+              }
             }
-          }
-        );
-      },
-      () => {
-        callback();
-      },
-      () => { },
-      'Save',
-      'Don\'t save',
-      'Cancel'
+          );
+        },
+        () => {
+          callback();
+        },
+        () => { },
+        'Save',
+        'Don\'t save',
+        'Cancel'
     );
+    }
   }
   /**
    * Open Gallery Project
