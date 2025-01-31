@@ -57,6 +57,7 @@ export class Workspace {
    * If simulation is on progress or not
    */
   static simulating = false;
+  static hasUnsavedChanges = true;
   /**
    * If circuit is loaded or not
    */
@@ -167,6 +168,7 @@ export class Workspace {
     for (const fn of window.DragListeners) {
       fn.fn(element);
     }
+    Workspace.hasUnsavedChanges = true;
   }
 
   /**
@@ -266,8 +268,8 @@ export class Workspace {
    * @param event Before Unload Event
    */
   static BeforeUnload(event) {
-    event.preventDefault();
-    event.returnValue = 'did you save the stuff?';
+      event.preventDefault();
+      event.returnValue = 'did you save the stuff?';
   }
   /**
    * Event Listener for mousemove on html body
@@ -577,6 +579,7 @@ export class Workspace {
     window['scope'][classString].push(obj);
     // Push dump to Undo stack & Reset
     UndoUtils.pushChangeToUndoAndReset({ keyName: obj.keyName, event: 'add', element: obj.save() });
+    Workspace.hasUnsavedChanges = true;
   }
   /** Function updates the position of wires */
   static updateWires() {
@@ -662,7 +665,6 @@ export class Workspace {
         SaveOffline.Save(saveObj, callback);
       }
     });
-
   }
 
   /**
@@ -678,7 +680,6 @@ export class Workspace {
     Workspace.translateX = data.canvas.x;
     Workspace.translateY = data.canvas.y;
     Workspace.scale = data.canvas.scale;
-
     // Update the translation and scaling
     window.queue = 0;
     const ele = (window['canvas'].canvas as HTMLElement);
@@ -731,6 +732,7 @@ export class Workspace {
         window.hideLoading();
       }
     }, 100);
+    Workspace.hasUnsavedChanges = false;
     UndoUtils.resetStacks();
   }
   /** This function recreates the wire object */
@@ -884,6 +886,7 @@ export class Workspace {
     } else {
       window['showToast']('No Element Selected');
     }
+    Workspace.hasUnsavedChanges = true;
   }
 
   /** Function to copy component fro Workspace */
@@ -919,6 +922,7 @@ export class Workspace {
       const obj = new myClass(window['canvas'], pt.x, pt.y);
       window['scope'][key].push(obj);
       // obj.copy(Workspace.copiedItem)
+      Workspace.hasUnsavedChanges = true;
     }
   }
 
