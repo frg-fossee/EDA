@@ -26,11 +26,11 @@ export class CodeEditorComponent {
   /**
    * Monaco code editor options
    */
-   size = 15;
+  editorFontSize = 16;   // Default font size
   editorOptions = {
     theme: 'vs',
     language: 'c',
-    fontSize: 15
+    fontSize: this.editorFontSize
   };
   /**
    * Instance of Monaco editor
@@ -146,19 +146,28 @@ export class CodeEditorComponent {
       }
     }
   }
-  /**
-   * Increase the size of the font in the editor
-   */
-  IncreaseFont(fontSize: number) {
-    this.size = this.size + 1;
-    this.editorOptions = {...this.editorOptions, fontSize: this.size};
+  fontSizes = [10, 12, 14, 16, 18, 20, 22, 24, 26, 28]; // Font size options for the dropdown
+  // Update font size in editor options
+  updateFontSize(): void {
+    this.editorOptions = { ...this.editorOptions, fontSize: this.editorFontSize };
+    // If the editor instance exists, update its options directly
+    if (this.editor) {
+      this.editor.updateOptions({ fontSize: this.editorFontSize });
+    }
   }
-  /**
-   * Decrease the size of the font in the editor
-   */
-  DecreaseFont(fontSize: number) {
-    this.size = this.size - 1;
-    this.editorOptions = {...this.editorOptions, fontSize: this.size};
+  // Increase font size and sync with editor
+  IncreaseFont(): void {
+    if (this.editorFontSize < Math.max(...this.fontSizes)) {
+      this.editorFontSize += 2;
+      this.updateFontSize();
+    }
+  }
+  // Decrease font size and sync with editor
+  DecreaseFont(): void {
+    if (this.editorFontSize > Math.min(...this.fontSizes)) {
+      this.editorFontSize -= 2;
+      this.updateFontSize();
+    }
   }
   /**
    * Download the code from code editor

@@ -9,6 +9,11 @@
     <div class="inline-block"
       style="display: flex; background-color:whitesmoke; justify-content: space-between;margin:auto;">
       <span style="flex:1 1 auto;"></span>
+      <div class="form-group mt-2" matTooltip="Choose font size" style="max-height: 20px; box-shadow: whitesmoke;">
+        <select id="fontSizeSelector" class="form-control form-control-sm" [(ngModel)]="editorFontSize" (change)="updateFontSize()">
+          <option *ngFor="let size of fontSizes" [value]="size">{{ size }}</option>
+        </select>
+      </div>
       <button class="btn btn-light btn-sm  mb-1 mt-2 mr-1 " matTooltip="Increase font size" style="font-size: 16px; max-height:30px;background: transparent;"
         (click)="IncreaseFont()"><i>A+</i></button>
       <button class="btn btn-light btn-sm  mb-1 mt-2 mr-1 " matTooltip="Decrease font size" style="font-size: 16px; max-height:30px;background: transparent;"
